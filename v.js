@@ -21,11 +21,34 @@ const behindDoors = field => {
 
 const behindDoorsHTML = field => {
     if (field.isWall) return '<span class="wall">   </span>';
-    if (field.isDoor) return '<span class="door">-' + field.char + '-</span>';
-    if (field.isKey) return '<span class="key" title="' + (keys[field.char] === "free" ? 'free' : ('behind doors: ' + keys[field.char])) + '">*' + field.char + '*</span>';
+    if (field.isDoor) {
+        const title = doorHideKeys[field.char].length === 0 ? 'empty of keys' : 'keys inside: ' + doorHideKeys[field.char];
+        return '<span class="door" title="' + title + '">-' + field.char + '-</span>';
+    }
+    if (field.isKey) {
+        const title = keys[field.char] === "free" ? 'free' : 'behind doors: ' + keys[field.char];
+        const title2 = keysHideKeys[field.char].length === 0 ? "empty of keys" : 'keys inside: ' + keysHideKeys[field.char];
+        return '<span class="key" title="' + title + " -- " +  title2 + '">*' + field.char + '*</span>';
+    }
     if (field.behindDoors !== null) return '<span>' + field.behindDoors.join("").padEnd(2, " ").padStart(3, " ").slice(0,3) + '</span>';
     //if (field.distance !== null) return field.distance.toString().padEnd(2, " ").padStart(3, " ");
     if (field.isMe) return '<span class="me">   </span>'
+    return '<span>   </span>';
+}
+
+const distancesHTML = field => {
+    if (field.isWall) return '<span class="wall">   </span>';
+    if (field.isDoor) {
+        const title = doorHideKeys[field.char].length === 0 ? 'empty of keys' : 'keys inside: ' + doorHideKeys[field.char];
+        return '<span class="door" title="' + title + '">-' + field.char + '-</span>';
+    }
+    if (field.isKey) {
+        const title = keys[field.char] === "free" ? 'free' : 'behind doors: ' + keys[field.char];
+        const title2 = keysHideKeys[field.char].length === 0 ? "empty of keys" : 'keys inside: ' + keysHideKeys[field.char];
+        return '<span class="key" title="' + title + " -- " +  title2 + '">*' + field.char + '*</span>';
+    }
+    if (field.isMe) return '<span class="me">   </span>'
+    if (field.distance !== null) return '<span>' + field.distance.toString().padEnd(2, " ").padStart(3, " ") + '</span>';
     return '<span>   </span>';
 }
 

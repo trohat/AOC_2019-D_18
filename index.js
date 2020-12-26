@@ -4,6 +4,9 @@ const splitLines = (data) => data.split(String.fromCharCode(10));
 
 const keys = {};
 const doorHideKeys = {};
+const keysBehindKeys = {};
+const keysHideKeys = {};
+const keyDistances = {};
 
 const prepare = (data, test) => {
     const width = data[0].length;
@@ -25,7 +28,7 @@ const prepare = (data, test) => {
             const isSpecial = (char !== "." && char !== "#");
             const isDoor = /[A-Z]/.test(char);
             const isKey = /[a-z]/.test(char);
-            map[i].push({ char, isMe, isWall, isSpecial, isDoor, isKey, distance: null, visited: false, nearestCrossroad: null, behindDoors: null})
+            map[i].push({ char, isMe, isWall, isSpecial, isDoor, isKey, distance: null, visited: false, nearestCrossroad: null, behindDoors: null, behindKeys: null})
             j++;
         }
         i++;
@@ -65,8 +68,18 @@ const prepare = (data, test) => {
             } else if (actualField.behindDoors) {
                 newField.behindDoors = actualField.behindDoors;
             }
-            if (newField.isKey) 
-            keys[newField.char] = newField.behindDoors ? newField.behindDoors.join("") : "free";
+            if (actualField.isKey) {
+                if (actualField.behindKeys === null) newField.behindKeys = [ actualField.char ];
+                else newField.behindKeys = [ ...actualField.behindKeys, actualField.char];
+                //console.log(newField.behindDoors);
+            } else if (actualField.behindKeys) {
+                newField.behindKeys = actualField.behindKeys;
+            }
+            if (newField.isKey) {
+                keys[newField.char] = newField.behindDoors ? newField.behindDoors.join("") : "free";
+                keysBehindKeys[newField.char] = newField.behindKeys ? newField.behindKeys.join("") : "empty";
+                keyDistances[newField.char] = newField.distance;
+            }
 
             fieldsToSearch.push( { y: y + dir.y , x: x + dir.x });
         }
@@ -79,8 +92,19 @@ const prepare = (data, test) => {
         for (const door of keys[key]) 
             doorHideKeys[door].push(key);
     }
+    for (let i = 97; i < 123; i++) {
+        keysHideKeys[String.fromCharCode(i)] = [];
+    }
+    for (const key in keysBehindKeys) {
+        if (keysBehindKeys[key] === "empty") continue;
+        for (const key2 of keysBehindKeys[key]) 
+        keysHideKeys[key2].push(key);
+    }
     console.log(keys);
-    console.log(doorHideKeys)
+    console.log(doorHideKeys);
+    console.log(keysBehindKeys);
+    console.log(keysHideKeys);
+    console.log(keyDistances);
     return map;
 };
 
